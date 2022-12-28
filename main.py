@@ -40,7 +40,7 @@ def generate_password():
 
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
-def add_info():
+def save_info():
     website = website_textfield.get()
     username = username_textfield.get()
     password = password_textfield.get()
@@ -74,6 +74,26 @@ def add_info():
             password_textfield.delete(0, END)
 
 
+def search_info():
+    try:
+        with open("data.json", "r") as data_file:
+            data = json.load(data_file)
+    except FileNotFoundError:
+        messagebox.showerror(message="File not found, please create the file by adding passwords",
+                             title="No File Error")
+    else:
+        website_name = website_textfield.get()
+        if website_name in data:
+            email = data[website_name]["email"]
+            password = (data[website_name]["password"])
+            messagebox.showinfo(title=f"Information for {website_name}",
+                                message=f"Email: {email}\nPassword: {password}\nPassword has been copied to your "
+                                        f"clipboard")
+            pyperclip.copy(password)
+        else:
+            messagebox.showerror(title="Error", message=f"The information for {website_name} does not exist")
+
+
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Password Manager")
@@ -97,8 +117,8 @@ password_label.grid(row=3, column=0)
 
 # Input fields
 
-website_textfield = Entry(width=52)
-website_textfield.grid(row=1, column=1, columnspan=2)
+website_textfield = Entry(width=33)
+website_textfield.grid(row=1, column=1)
 website_textfield.insert(0, ".com")
 website_textfield.focus()
 
@@ -110,10 +130,13 @@ password_textfield = Entry(width=33)
 password_textfield.grid(row=3, column=1)
 
 # Buttons
+search_button = Button(text="Search", width=14, command=search_info)
+search_button.grid(row=1, column=2)
+
 generate_button = Button(text="Generate Password", command=generate_password)
 generate_button.grid(row=3, column=2)
 
-add_button = Button(text="Add", width=44, command=add_info)
+add_button = Button(text="Add", width=44, command=save_info)
 add_button.grid(row=4, column=1, columnspan=2)
 
 window.mainloop()
