@@ -50,22 +50,28 @@ def add_info():
     new_data = {
         website: {
             "email": username,
-            "password": password,
+            "password": password
         }
     }
 
     if password_length == 0 or website_length == 0:
         messagebox.showerror(message="You cannot leave the fields empty", title="Error!!")
     else:
-        with open("data.json", mode="r") as json_file:  # mode (a) will append the file
-            # json.dump(new_data, json_file,indent=4)
-            # data = json.load(json_file)
-
-
-        # Clearing the fields after each use
-        pyperclip.copy(password)
-        website_textfield.delete(0, END)
-        password_textfield.delete(0, END)
+        try:
+            with open("data.json", "r") as data_file:  # mode (a) will append the file
+                data = json.load(data_file)
+                data.update(new_data)
+        except FileNotFoundError:
+            with open("data.json", "w") as data_file:  # Makes a new file, if it doesn't exist
+                json.dump(new_data, data_file, indent=4)
+        else:
+            with open("data.json", "w") as data_file:
+                json.dump(data, data_file, indent=4)  # If there is no error, dump the information into the data_file
+        finally:
+            # Clearing the fields after each use
+            pyperclip.copy(password)
+            website_textfield.delete(0, END)
+            password_textfield.delete(0, END)
 
 
 # ---------------------------- UI SETUP ------------------------------- #
