@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 import random
 import pyperclip
+import json
 
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
@@ -33,7 +34,7 @@ def generate_password():
 
     random.shuffle(password_list)
 
-    password = "".join(password_list) # Makes a list into a string
+    password = "".join(password_list)  # Makes a list into a string
 
     password_textfield.insert(index=0, string=password)
 
@@ -46,20 +47,25 @@ def add_info():
     password_length = len(password.strip(" "))  # Stripping spaces because user may spam spaces instead of a blank space
     website_length = len(website.strip(" "))
 
+    new_data = {
+        website: {
+            "email": username,
+            "password": password,
+        }
+    }
+
     if password_length == 0 or website_length == 0:
         messagebox.showerror(message="You cannot leave the fields empty", title="Error!!")
     else:
-        is_okay = messagebox.askokcancel(title=website,
-                                         message=f"The following is the information that you inputted: "
-                                                 f"\nUsername/Email: {username} \nPassword: {password} \nIs this okay?")
-        if is_okay:
-            with open("data.txt", mode="a") as file:  # mode (a) will append the file
-                file.write(f"{website} | {username} | {password} \n")
+        with open("data.json", mode="r") as json_file:  # mode (a) will append the file
+            # json.dump(new_data, json_file,indent=4)
+            # data = json.load(json_file)
 
-            # Clearing the fields after each use
-            pyperclip.copy(password)
-            website_textfield.delete(0, END)
-            password_textfield.delete(0, END)
+
+        # Clearing the fields after each use
+        pyperclip.copy(password)
+        website_textfield.delete(0, END)
+        password_textfield.delete(0, END)
 
 
 # ---------------------------- UI SETUP ------------------------------- #
